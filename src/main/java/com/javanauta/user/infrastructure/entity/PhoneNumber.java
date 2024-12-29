@@ -14,7 +14,6 @@ import lombok.*;
 public class PhoneNumber {
 
     @Id
-    @Setter(AccessLevel.PROTECTED)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "number", length = 12)
