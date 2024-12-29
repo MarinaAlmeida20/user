@@ -23,8 +23,10 @@ public class UserConverter {
                 .name(userDTO.getNameDTO())
                 .email(userDTO.getEmailDTO())
                 .password(userDTO.getPasswordDTO())
-                .addresses(toListAddress(userDTO.getAddressesDTO()))
-                .phoneNumber(toListPhoneNumber(userDTO.getPhoneNumbersDTO()))
+                .addresses(userDTO.getAddressesDTO() != null ?
+                        toListAddress(userDTO.getAddressesDTO()) : null)
+                .phoneNumber(userDTO.getPhoneNumbersDTO() != null ?
+                        toListPhoneNumber(userDTO.getPhoneNumbersDTO()) : null)
                 .build();
     }
 
@@ -54,6 +56,14 @@ public class UserConverter {
 
     public List<PhoneNumber> toListPhoneNumber(List<PhoneNumberDTO> phoneNumberDTOList){
         return phoneNumberDTOList.stream().map(this::toPhoneNumber).toList();
+
+
+        // 2 To get the list of addresses
+//        List<PhoneNumber> phoneNumberList = new ArrayList<>();
+//        for(PhoneNumberDTO phoneNumberDTO : phoneNumberDTOList){
+//            phoneNumberList.add(toPhoneNumber(phoneNumberDTO));
+//        }
+//        return phoneNumberList;
     }
 
     public PhoneNumber toPhoneNumber(PhoneNumberDTO phoneNumberDTO){
@@ -72,8 +82,10 @@ public class UserConverter {
                 .nameDTO(user.getName())
                 .emailDTO(user.getEmail())
                 .passwordDTO(user.getPassword())
-                .addressesDTO(toListAddressDTO(user.getAddresses()))
-                .phoneNumbersDTO(toListPhoneNumberDTO(user.getPhoneNumber()))
+                .addressesDTO(user.getAddresses() != null ?
+                        toListAddressDTO(user.getAddresses()) : null)
+                .phoneNumbersDTO(user.getPhoneNumber() != null ?
+                        toListPhoneNumberDTO(user.getPhoneNumber()) : null)
                 .build();
     }
 
@@ -94,6 +106,7 @@ public class UserConverter {
     // Get only one address
     public AddressDTO toAddressDTO(Address address){
         return AddressDTO.builder()
+                .id(address.getId())
                 .city(address.getCity())
                 .road(address.getRoad())
                 .number(address.getNumber())
@@ -107,6 +120,7 @@ public class UserConverter {
 
     public PhoneNumberDTO toPhoneNumberDTO(PhoneNumber phoneNumber){
         return PhoneNumberDTO.builder()
+                .id(phoneNumber.getId())
                 .number(phoneNumber.getNumber())
                 .build();
     }
