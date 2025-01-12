@@ -20,13 +20,13 @@ public class UserConverter {
 
     public User toUser(UserDTO userDTO) {
         return User.builder()
-                .name(userDTO.getNameDTO())
-                .email(userDTO.getEmailDTO())
-                .password(userDTO.getPasswordDTO())
-                .addresses(userDTO.getAddressesDTO() != null ?
-                        toListAddress(userDTO.getAddressesDTO()) : null)
-                .phoneNumber(userDTO.getPhoneNumbersDTO() != null ?
-                        toListPhoneNumber(userDTO.getPhoneNumbersDTO()) : null)
+                .name(userDTO.getName())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
+                .address(userDTO.getAddresses() != null ?
+                        toListAddress(userDTO.getAddresses()) : null)
+                .phoneNumber(userDTO.getPhoneNumbers() != null ?
+                        toListPhoneNumber(userDTO.getPhoneNumbers()) : null)
                 .build();
     }
 
@@ -77,15 +77,15 @@ public class UserConverter {
      * Alt+J
      **/
 
-    public UserDTO toUserDTO(User user) {
+    public UserDTO toUserDTO(User userEntity) {
         return UserDTO.builder()
-                .nameDTO(user.getName())
-                .emailDTO(user.getEmail())
-                .passwordDTO(user.getPassword())
-                .addressesDTO(user.getAddresses() != null ?
-                        toListAddressDTO(user.getAddresses()) : null)
-                .phoneNumbersDTO(user.getPhoneNumber() != null ?
-                        toListPhoneNumberDTO(user.getPhoneNumber()) : null)
+                .name(userEntity.getName())
+                .email(userEntity.getEmail())
+                .password(userEntity.getPassword())
+                .addresses(userEntity.getAddress() != null ?
+                        toListAddressDTO(userEntity.getAddress()) : null)
+                .phoneNumbers(userEntity.getPhoneNumber() != null ?
+                        toListPhoneNumberDTO(userEntity.getPhoneNumber()) : null)
                 .build();
     }
 
@@ -122,6 +122,23 @@ public class UserConverter {
         return PhoneNumberDTO.builder()
                 .id(phoneNumber.getId())
                 .number(phoneNumber.getNumber())
+                .build();
+    }
+
+    // Method builder to compare DTO and Entity
+    // Update only for User
+    public User updateUser(UserDTO userDTO, User userEntity){
+        return User.builder()
+                // check if the userDTO give the name if it is different of null get the name DTO
+                // if not get userEntity the one in the database
+                .name(userDTO.getName() != null ? userDTO.getName() : userEntity.getName())
+                // ID doesn't change so get from entity(database)
+                .id(userEntity.getId())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : userEntity.getEmail())
+                .password(userDTO.getPassword() != null ? userDTO.getPassword() : userEntity.getPassword())
+                // Address and PhoneNumber will be modified in other method
+                .address(userEntity.getAddress())
+                .phoneNumber(userEntity.getPhoneNumber())
                 .build();
     }
 }

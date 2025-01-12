@@ -11,10 +11,10 @@ import java.util.List;
 @Builder
 public class UserDTO {
 
-    private String nameDTO;
-    private String emailDTO;
-    private String passwordDTO;
-    private List<AddressDTO> addressesDTO;
-    private List<PhoneNumberDTO> phoneNumbersDTO;
+    private String name;
+    private String email;
+    private String password;
+    private List<AddressDTO> addresses;
+    private List<PhoneNumberDTO> phoneNumbers;
 
 }
