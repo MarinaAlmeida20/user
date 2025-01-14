@@ -1,11 +1,18 @@
 package com.javanauta.user.business;
 
 import com.javanauta.user.business.converter.UserConverter;
+import com.javanauta.user.business.dto.AddressDTO;
+import com.javanauta.user.business.dto.PhoneNumberDTO;
 import com.javanauta.user.business.dto.UserDTO;
+import com.javanauta.user.infrastructure.entity.Address;
+import com.javanauta.user.infrastructure.entity.PhoneNumber;
 import com.javanauta.user.infrastructure.entity.User;
 import com.javanauta.user.infrastructure.exceptions.ConflictException;
 import com.javanauta.user.infrastructure.exceptions.ResourceNotFoundException;
+import com.javanauta.user.infrastructure.repository.AddressRepository;
+import com.javanauta.user.infrastructure.repository.PhoneNumberRepository;
 import com.javanauta.user.infrastructure.repository.UserRepository;
+import com.javanauta.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,8 +22,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PhoneNumberRepository phoneNumberRepository;
+
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     /**
      * line 22: Receive an userDTO
@@ -25,16 +36,22 @@ public class UserService {
      * line 32: transform user entity to userDTO
      **/
     public UserDTO saveUser(UserDTO userDTO){
-        try{
-            emailExists(userDTO.getEmailDTO());
-            userDTO.setPasswordDTO(passwordEncoder.encode(userDTO.getPasswordDTO()));
-
-            User user = userConverter.toUser(userDTO);
-            user = userRepository.save(user);
-            return userConverter.toUserDTO(user);
-        } catch (ConflictException e) {
-            throw new ConflictException("Email already registered " + e.getCause());
-        }
+//        try{
+//            emailExists(userDTO.getEmailDTO());
+//            userDTO.setPasswordDTO(passwordEncoder.encode(userDTO.getPasswordDTO()));
+//
+//            User user = userConverter.toUser(userDTO);
+//            user = userRepository.save(user);
+//            return userConverter.toUserDTO(user);
+//        } catch (ConflictException e) {
+//            throw new ConflictException("Email already registered " + e.getCause());
+//        }
+        emailExists(userDTO.getEmail());
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        User user = userConverter.toUser(userDTO);
+        return userConverter.toUserDTO(
+                userRepository.save(user)
+        );
 
 
     }
@@ -55,12 +72,68 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User findByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException("Email not found " + email));
+    public UserDTO findUserByEmail(String email){
+
+        try {
+            return userConverter.toUserDTO(
+                    userRepository.findByEmail(email)
+                            .orElseThrow(
+                                    () -> new ResourceNotFoundException("Email not found " + email)
+                            )
+            );
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Email not found " + email);
+        }
+
+//        return userRepository.findByEmail(email).orElseThrow(
+//                () -> new ResourceNotFoundException("Email not found " + email));
     }
+
+//    public List<User> findAll(){
+//        return userRepository.findAll();
+//    }
 
     public void deleteUserByEmail(String email){
         userRepository.deleteByEmail(email);
+    }
+
+    public UserDTO updateUserData(String token, UserDTO userDTO){
+        // Get email from token
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // encrypted password
+        userDTO.setPassword(
+                userDTO.getPassword() != null ?
+                        passwordEncoder.encode(userDTO.getPassword()) : null);
+
+        //Get user data from database
+        User userEntity = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email Not Found"));
+
+        // Compare User Entity with UserDTO
+        User user = userConverter.updateUser(userDTO, userEntity);
+
+        // Saved the data from user converted and got the return and converted to UserDTO
+        return userConverter.toUserDTO(userRepository.save(user));
+    }
+
+    public AddressDTO updateAddress (Long idAddress, AddressDTO addressDTO){
+        Address addressEntity = addressRepository.findById(idAddress).orElseThrow(
+                () -> new ResourceNotFoundException("Not Found ID " + idAddress)
+        );
+
+        Address address = userConverter.updateAddress(addressDTO, addressEntity);
+
+        return userConverter.toAddressDTO(addressRepository.save(address));
+    }
+
+    public PhoneNumberDTO updatePhoneNumber (Long idPhone, PhoneNumberDTO phoneDTO){
+        PhoneNumber phoneNumberEntity = phoneNumberRepository.findById(idPhone).orElseThrow(
+                () -> new ResourceNotFoundException("Not Found ID " + idPhone)
+        );
+
+        PhoneNumber phoneNumber = userConverter.updatePhoneNumber(phoneDTO, phoneNumberEntity);
+
+        return userConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
 }

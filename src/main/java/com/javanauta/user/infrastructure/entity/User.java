@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String password;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<Address> addresses;
+    private List<Address> address;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private List<PhoneNumber> phoneNumber;
@@ -49,4 +49,5 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
 }

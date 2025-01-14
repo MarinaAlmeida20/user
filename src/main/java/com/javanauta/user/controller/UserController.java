@@ -1,8 +1,9 @@
 package com.javanauta.user.controller;
 
 import com.javanauta.user.business.UserService;
+import com.javanauta.user.business.dto.AddressDTO;
+import com.javanauta.user.business.dto.PhoneNumberDTO;
 import com.javanauta.user.business.dto.UserDTO;
-import com.javanauta.user.infrastructure.entity.User;
 import com.javanauta.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,21 +29,44 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestBody UserDTO userDTO){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getEmailDTO(),
-                        userDTO.getPasswordDTO())
+                new UsernamePasswordAuthenticationToken(userDTO.getEmail(),
+                        userDTO.getPassword())
         );
 
         return "Bearer " + jwtUtil.generateToken(authentication.getName());
     }
 
     @GetMapping
-    public ResponseEntity<User> findByEmail(@RequestParam("email") String email){
-        return ResponseEntity.ok(userService.findByEmail(email));
+    public ResponseEntity<UserDTO> finUserByEmail(@RequestParam("email") String email){
+        return ResponseEntity.ok(userService.findUserByEmail(email));
     }
+
+//    @GetMapping
+//    public List<User> findAll(){
+//        return userService.findAll();
+//    }
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUserByEmail(@PathVariable String email){
         userService.deleteUserByEmail(email);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO,
+                                              @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.updateUserData(token, userDTO));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO,
+                                                    @RequestParam("id") Long id){
+        return ResponseEntity.ok(userService.updateAddress(id, addressDTO));
+    }
+
+    @PutMapping("/phoneNumber")
+    public ResponseEntity<PhoneNumberDTO> updatePhoneNumber(@RequestBody PhoneNumberDTO phoneNumberDTO,
+                                                        @RequestParam("id") Long id){
+        return ResponseEntity.ok(userService.updatePhoneNumber(id, phoneNumberDTO));
     }
 }
