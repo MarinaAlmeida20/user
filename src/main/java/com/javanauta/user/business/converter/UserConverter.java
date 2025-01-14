@@ -141,4 +141,21 @@ public class UserConverter {
                 .phoneNumber(userEntity.getPhoneNumber())
                 .build();
     }
+
+    public Address updateAddress(AddressDTO addressDTO, Address addressEntity){
+        return Address.builder()
+                .id(addressEntity.getId())
+                .road(addressDTO.getRoad() != null ? addressDTO.getRoad() : addressEntity.getRoad())
+                .postcode(addressDTO.getPostcode() != null ? addressDTO.getPostcode() : addressEntity.getPostcode())
+                .number(addressDTO.getNumber() != null ? addressDTO.getNumber() : addressEntity.getNumber())
+                .city(addressDTO.getCity() != null ? addressDTO.getCity() : addressEntity.getCity())
+                .build();
+    }
+
+    public PhoneNumber updatePhoneNumber(PhoneNumberDTO phoneNumberDTO, PhoneNumber phoneNumberEntity){
+        return PhoneNumber.builder()
+                .id(phoneNumberEntity.getId())
+                .number(phoneNumberDTO.getNumber() != null ? phoneNumberDTO.getNumber() : phoneNumberEntity.getNumber())
+                .build();
+    }
 }

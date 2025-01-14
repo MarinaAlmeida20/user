@@ -1,10 +1,16 @@
 package com.javanauta.user.business;
 
 import com.javanauta.user.business.converter.UserConverter;
+import com.javanauta.user.business.dto.AddressDTO;
+import com.javanauta.user.business.dto.PhoneNumberDTO;
 import com.javanauta.user.business.dto.UserDTO;
+import com.javanauta.user.infrastructure.entity.Address;
+import com.javanauta.user.infrastructure.entity.PhoneNumber;
 import com.javanauta.user.infrastructure.entity.User;
 import com.javanauta.user.infrastructure.exceptions.ConflictException;
 import com.javanauta.user.infrastructure.exceptions.ResourceNotFoundException;
+import com.javanauta.user.infrastructure.repository.AddressRepository;
+import com.javanauta.user.infrastructure.repository.PhoneNumberRepository;
 import com.javanauta.user.infrastructure.repository.UserRepository;
 import com.javanauta.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +22,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PhoneNumberRepository phoneNumberRepository;
+
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -63,7 +72,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public UserDTO findByEmail(String email){
+    public UserDTO findUserByEmail(String email){
 
         try {
             return userConverter.toUserDTO(
@@ -106,6 +115,25 @@ public class UserService {
 
         // Saved the data from user converted and got the return and converted to UserDTO
         return userConverter.toUserDTO(userRepository.save(user));
+    }
 
+    public AddressDTO updateAddress (Long idAddress, AddressDTO addressDTO){
+        Address addressEntity = addressRepository.findById(idAddress).orElseThrow(
+                () -> new ResourceNotFoundException("Not Found ID " + idAddress)
+        );
+
+        Address address = userConverter.updateAddress(addressDTO, addressEntity);
+
+        return userConverter.toAddressDTO(addressRepository.save(address));
+    }
+
+    public PhoneNumberDTO updatePhoneNumber (Long idPhone, PhoneNumberDTO phoneDTO){
+        PhoneNumber phoneNumberEntity = phoneNumberRepository.findById(idPhone).orElseThrow(
+                () -> new ResourceNotFoundException("Not Found ID " + idPhone)
+        );
+
+        PhoneNumber phoneNumber = userConverter.updatePhoneNumber(phoneDTO, phoneNumberEntity);
+
+        return userConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
 }
