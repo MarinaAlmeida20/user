@@ -1,18 +1,21 @@
 package com.javanauta.user.business.converter;
 
-import com.javanauta.user.business.dto.AddressDTO;
-import com.javanauta.user.business.dto.PhoneNumberDTO;
 import com.javanauta.user.business.dto.UserDTO;
-import com.javanauta.user.infrastructure.entity.Address;
-import com.javanauta.user.infrastructure.entity.PhoneNumber;
 import com.javanauta.user.infrastructure.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UserConverter {
+
+    private final AddressConverter addressConverter;
+    private final PhoneNumberConverter phoneNumberConverter;
+
+    @Autowired
+    public UserConverter(AddressConverter addressConverter, PhoneNumberConverter phoneNumberConverter) {
+        this.addressConverter = addressConverter;
+        this.phoneNumberConverter = phoneNumberConverter;
+    }
 
     /**
      * Convert: UserDTO to User
@@ -24,53 +27,12 @@ public class UserConverter {
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
                 .address(userDTO.getAddresses() != null ?
-                        toListAddress(userDTO.getAddresses()) : null)
+                        addressConverter.toListAddress(userDTO.getAddresses()) : null)
                 .phoneNumber(userDTO.getPhoneNumbers() != null ?
-                        toListPhoneNumber(userDTO.getPhoneNumbers()) : null)
+                        phoneNumberConverter.toListPhoneNumber(userDTO.getPhoneNumbers()) : null)
                 .build();
     }
 
-    // Get the list of addresses
-    public List<Address> toListAddress(List<AddressDTO> addressDTOList){
-
-        // 1 way to get the list of addresses
-        return addressDTOList.stream().map(this::toAddress).toList();
-
-        // 2 To get the list of addresses
-//            List<Address> addresses = new ArrayList<>();
-//            for (AddressDTO addressDTO : addressDTOList){
-//                addresses.add(toAddress(addressDTO));
-//            }
-//            return addresses;
-    }
-
-    // Get only one address
-    public Address toAddress(AddressDTO addressDTO){
-        return Address.builder()
-                .city(addressDTO.getCity())
-                .road(addressDTO.getRoad())
-                .number(addressDTO.getNumber())
-                .postcode(addressDTO.getPostcode())
-                .build();
-    }
-
-    public List<PhoneNumber> toListPhoneNumber(List<PhoneNumberDTO> phoneNumberDTOList){
-        return phoneNumberDTOList.stream().map(this::toPhoneNumber).toList();
-
-
-        // 2 To get the list of addresses
-//        List<PhoneNumber> phoneNumberList = new ArrayList<>();
-//        for(PhoneNumberDTO phoneNumberDTO : phoneNumberDTOList){
-//            phoneNumberList.add(toPhoneNumber(phoneNumberDTO));
-//        }
-//        return phoneNumberList;
-    }
-
-    public PhoneNumber toPhoneNumber(PhoneNumberDTO phoneNumberDTO){
-        return PhoneNumber.builder()
-                .number(phoneNumberDTO.getNumber())
-                .build();
-    }
 
     /**
      * Convert: User to UserDTO
@@ -83,45 +45,9 @@ public class UserConverter {
                 .email(userEntity.getEmail())
                 .password(userEntity.getPassword())
                 .addresses(userEntity.getAddress() != null ?
-                        toListAddressDTO(userEntity.getAddress()) : null)
+                        addressConverter.toListAddressDTO(userEntity.getAddress()) : null)
                 .phoneNumbers(userEntity.getPhoneNumber() != null ?
-                        toListPhoneNumberDTO(userEntity.getPhoneNumber()) : null)
-                .build();
-    }
-
-    // Get the list of addresses
-    public List<AddressDTO> toListAddressDTO(List<Address> addressList){
-
-        // 1 way to get the list of addresses
-//        return addressList.stream().map(this::toAddressDTO).toList();
-
-        // 2 To get the list of addresses
-        List<AddressDTO> addressDTOList = new ArrayList<>();
-        for(Address address : addressList){
-            addressDTOList.add(toAddressDTO(address));
-        }
-        return addressDTOList;
-    }
-
-    // Get only one address
-    public AddressDTO toAddressDTO(Address address){
-        return AddressDTO.builder()
-                .id(address.getId())
-                .city(address.getCity())
-                .road(address.getRoad())
-                .number(address.getNumber())
-                .postcode(address.getPostcode())
-                .build();
-    }
-
-    public List<PhoneNumberDTO> toListPhoneNumberDTO(List<PhoneNumber> phoneNumberList){
-        return phoneNumberList.stream().map(this::toPhoneNumberDTO).toList();
-    }
-
-    public PhoneNumberDTO toPhoneNumberDTO(PhoneNumber phoneNumber){
-        return PhoneNumberDTO.builder()
-                .id(phoneNumber.getId())
-                .number(phoneNumber.getNumber())
+                        phoneNumberConverter.toListPhoneNumberDTO(userEntity.getPhoneNumber()) : null)
                 .build();
     }
 
@@ -142,20 +68,4 @@ public class UserConverter {
                 .build();
     }
 
-    public Address updateAddress(AddressDTO addressDTO, Address addressEntity){
-        return Address.builder()
-                .id(addressEntity.getId())
-                .road(addressDTO.getRoad() != null ? addressDTO.getRoad() : addressEntity.getRoad())
-                .postcode(addressDTO.getPostcode() != null ? addressDTO.getPostcode() : addressEntity.getPostcode())
-                .number(addressDTO.getNumber() != null ? addressDTO.getNumber() : addressEntity.getNumber())
-                .city(addressDTO.getCity() != null ? addressDTO.getCity() : addressEntity.getCity())
-                .build();
-    }
-
-    public PhoneNumber updatePhoneNumber(PhoneNumberDTO phoneNumberDTO, PhoneNumber phoneNumberEntity){
-        return PhoneNumber.builder()
-                .id(phoneNumberEntity.getId())
-                .number(phoneNumberDTO.getNumber() != null ? phoneNumberDTO.getNumber() : phoneNumberEntity.getNumber())
-                .build();
-    }
 }

@@ -1,5 +1,7 @@
 package com.javanauta.user.business;
 
+import com.javanauta.user.business.converter.AddressConverter;
+import com.javanauta.user.business.converter.PhoneNumberConverter;
 import com.javanauta.user.business.converter.UserConverter;
 import com.javanauta.user.business.dto.AddressDTO;
 import com.javanauta.user.business.dto.PhoneNumberDTO;
@@ -26,6 +28,9 @@ public class UserService {
     private final PhoneNumberRepository phoneNumberRepository;
 
     private final UserConverter userConverter;
+    private final AddressConverter addressConverter;
+    private final PhoneNumberConverter phoneNumberConverter;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -122,9 +127,9 @@ public class UserService {
                 () -> new ResourceNotFoundException("Not Found ID " + idAddress)
         );
 
-        Address address = userConverter.updateAddress(addressDTO, addressEntity);
+        Address address = addressConverter.updateAddress(addressDTO, addressEntity);
 
-        return userConverter.toAddressDTO(addressRepository.save(address));
+        return addressConverter.toAddressDTO(addressRepository.save(address));
     }
 
     public PhoneNumberDTO updatePhoneNumber (Long idPhone, PhoneNumberDTO phoneDTO){
@@ -132,8 +137,8 @@ public class UserService {
                 () -> new ResourceNotFoundException("Not Found ID " + idPhone)
         );
 
-        PhoneNumber phoneNumber = userConverter.updatePhoneNumber(phoneDTO, phoneNumberEntity);
+        PhoneNumber phoneNumber = phoneNumberConverter.updatePhoneNumber(phoneDTO, phoneNumberEntity);
 
-        return userConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
+        return phoneNumberConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
 }
