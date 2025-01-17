@@ -18,4 +18,6 @@ public class PhoneNumber {
     private Long id;
     @Column(name = "number", length = 12)
     private String number;
+    @Column(name = "user_id")
+    private Long user_id;
 }

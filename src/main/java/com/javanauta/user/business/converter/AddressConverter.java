@@ -83,4 +83,18 @@ public class AddressConverter {
                 .city(addressDTO.getCity() != null ? addressDTO.getCity() : addressEntity.getCity())
                 .build();
     }
+
+    /**
+     * Add new Address to db: the toAddressEntity will receive 2 params
+     * addressDTO adn (User id)idUser
+     **/
+    public Address toAddressEntity(AddressDTO addressDTO, Long idUser){
+        return Address.builder()
+                .city(addressDTO.getCity())
+                .number(addressDTO.getNumber())
+                .postcode(addressDTO.getPostcode())
+                .road(addressDTO.getRoad())
+                .user_id(idUser)
+                .build();
+    }
 }

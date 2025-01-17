@@ -25,5 +25,6 @@ public class Address {
     private String city;
     @Column(name = "postcode", length = 6)
     private String postcode;
-
+    @Column(name = "user_id")
+    private Long user_id;
 }
