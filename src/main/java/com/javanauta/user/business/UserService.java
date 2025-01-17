@@ -141,4 +141,46 @@ public class UserService {
 
         return phoneNumberConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
+
+    // Add new address ->  receive 2 params token(to be unique) and addressDTO(the new address to be added)
+    public AddressDTO addToAddress(String token,AddressDTO addressDTO){
+        // Get the token and extract the email from the User that will be added a new address
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // find the user using the repository (which is way to get information from db)
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email Not Found" + email));
+
+        // convert from dto to entity using user id as reference
+        Address address = addressConverter.toAddressEntity(addressDTO, user.getId());
+
+        // save the converted dto into the db
+        Address addressEntity = addressRepository.save(address);
+
+        // get from the db the address saved and convert back to dto with the new address in the user
+        return addressConverter.toAddressDTO(addressEntity);
+
+    }
+
+    // Add new address -.  receive 2 params token(to be unique) and addressDTO(the new address to be added)
+    public PhoneNumberDTO addToPhoneNumber(String token,PhoneNumberDTO phoneNumberDTO){
+        // Get the token and extract the email from the User that will be added a new address
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // find the user using the repository (which is way to get information from db)
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email Not Found" + email));
+
+        // convert from dto to entity using user id as reference
+        PhoneNumber phoneNumber = phoneNumberConverter.toPhoneNumberEntity(phoneNumberDTO, user.getId());
+
+        // save the converted dto into the db
+        PhoneNumber phoneNumberEntity = phoneNumberRepository.save(phoneNumber);
+
+        // get from the db the phone number saved and convert back to dto with the new phoneNumberDto in the user
+        return phoneNumberConverter.toPhoneNumberDTO(phoneNumberEntity);
+
+    }
+
+
 }
