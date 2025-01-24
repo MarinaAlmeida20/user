@@ -60,4 +60,15 @@ public class PhoneNumberConverter {
                 .number(phoneNumberDTO.getNumber() != null ? phoneNumberDTO.getNumber() : phoneNumberEntity.getNumber())
                 .build();
     }
+
+    /**
+     * Add new PhoneNumber to db: the toPhoneNumberEntity will receive 2 params
+     * PhoneNumberDTO adn (User id)idUser
+     **/
+    public PhoneNumber toPhoneNumberEntity(PhoneNumberDTO phoneNumberDTO, Long idUser){
+        return PhoneNumber.builder()
+                .number(phoneNumberDTO.getNumber())
+                .user_id(idUser)
+                .build();
+    }
 }

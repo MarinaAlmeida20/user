@@ -1,8 +1,6 @@
 package com.javanauta.user.controller;
 
 import com.javanauta.user.business.UserService;
-import com.javanauta.user.business.dto.AddressDTO;
-import com.javanauta.user.business.dto.PhoneNumberDTO;
 import com.javanauta.user.business.dto.UserDTO;
 import com.javanauta.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -53,15 +51,4 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserData(token, userDTO));
     }
 
-    @PutMapping("/address")
-    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO,
-                                                    @RequestParam("id") Long id){
-        return ResponseEntity.ok(userService.updateAddress(id, addressDTO));
-    }
-
-    @PutMapping("/phoneNumber")
-    public ResponseEntity<PhoneNumberDTO> updatePhoneNumber(@RequestBody PhoneNumberDTO phoneNumberDTO,
-                                                        @RequestParam("id") Long id){
-        return ResponseEntity.ok(userService.updatePhoneNumber(id, phoneNumberDTO));
-    }
 }
